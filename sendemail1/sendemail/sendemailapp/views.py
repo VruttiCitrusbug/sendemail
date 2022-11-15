@@ -1,7 +1,7 @@
 # from django.shortcuts import render,redirect
 from django.http import HttpResponse
 # from django.core.mail import send_mail
-# from django.conf import settings
+from django.conf import settings
 # # Create your views here.
 # def index(request):
 #     if request.method=='POST':
@@ -22,43 +22,45 @@ from django.http import HttpResponse
 # def mailsuccess(request):
 #     return HttpResponse("checkout email")
 
+        # sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        # print(sg)
+        # print("*************************************************************************************")
+        # response = sg.send(message)
+
+
+
+
+
+
+
 
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Email, Mail, Personalization
 from django.conf import settings
 from python_http_client import exceptions
 from sendgrid.helpers.mail import To,Bcc,Cc
-# def sendgrid_mail(to_email, TEMPLATE_KEY, dynamic_data_for_template):
-#     message = Mail(from_email=settings.SENDGRID_FROM_MAIL,
-#                     to_emails=to_email,)
-#     message.dynamic_template_data=dynamic_data_for_template
-#     message.template_id=TEMPLATE_KEY
-#     try:
-#         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
-#         response = sg.send(message)
-#         print(response.status_code)
-#         print(response.body)
-#         print(response.headers)
-#         return response
-#     except exceptions.BadRequestsError as e:
-#         print("sendgrid error-",e.body)
-#         pass
 
-# FROM_EMAIL = 'vrutti.citrusbug@gmail.com'
 TEMPLATE_KEY='d-37a7ab3963d945f48a64c89a52f56de3'
-TO_EMAILS = ['jayendra.citrusbug@gmail.com']
-def sendgrid_mail(to_email, TEMPLATE_KEY=TEMPLATE_KEY, dynamic_data_for_template={'name':'vrutti'}):
-    message = Mail(from_email=settings.SENDGRID_FROM_MAIL,
-                    to_emails=['dhiren.citrusbug@gmail.com','abc1@yopmail.com','jayendra.citrusbug@gmail.com','saloni.citrusbug@gmail.com'],
-                    subject="Test Email",
-                    html_content="hello")
-    message.dynamic_template_data=dynamic_data_for_template
+TO_EMAILS = ['saloni.citrusbug@gmail.com']
+def sendgrid_mail(to_email=TO_EMAILS, TEMPLATE_KEY=TEMPLATE_KEY, dynamic_data_for_template={'name':'vrutti'}):
+
+    message = Mail()
     message.template_id=TEMPLATE_KEY
+    message.from_email = Email(settings.SENDGRID_FROM_MAIL)
+
+    p=Personalization()
+    # obj=Email()
+    # obj.dynamic_template_data=dynamic_data_for_template 
+    # obj.substitutions=[('saloni.citrusbug@gmail.com')]
+    # import pdb
+    # pdb.set_trace()
+    p.add_to(Email('saloni.citrusbug@gmail.com'))
+
+    p.dynamic_template_data = dynamic_data_for_template
+
+    message.add_personalization(p)
+
     try:
-        # sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
-        # print(sg)
-        # print("*************************************************************************************")
-        # response = sg.send(message)
         return HttpResponse("Email Sent to all")
     except exceptions.BadRequestsError as e:
         print("sendgrid error-",e.body)
